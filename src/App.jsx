@@ -65,6 +65,10 @@ const isCollision = (fieldSize, position) => {
   return false;
 };
 
+const isEatingMyself = (fields, position) => {
+  return fields[position.y][position.x] === "snake";
+};
+
 function App() {
   const [fields, setFields] = useState(initialValues);
   const [body, setBody] = useState([]);
@@ -73,8 +77,9 @@ function App() {
   const [tick, setTick] = useState(0);
 
   useEffect(() => {
-    setBody([initialPosition]);
-    // ゲームの中の時間を管理する
+    setBody(
+      new Array(15).fill("").map((_item, index) => ({ x: 17, y: 17 + index }))
+    ); // ゲームの中の時間を管理する
     timer = setInterval(() => {
       setTick((tick) => tick + 1);
     }, defaultInterval);
@@ -136,7 +141,10 @@ function App() {
       x: x + delta.x,
       y: y + delta.y,
     };
-    if (isCollision(fields.length, newPosition)) {
+    if (
+      isCollision(fields.length, newPosition) ||
+      isEatingMyself(fields, newPosition)
+    ) {
       unsubscribe();
       return false;
     }
